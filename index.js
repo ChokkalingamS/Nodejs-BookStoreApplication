@@ -37,3 +37,13 @@ app.get('/',(request,response)=>{
 app.listen(port,()=>{
     console.log("Server Started-",port);
 })
+
+
+// // const s=[{},{projection:{Genre:1,_id:0}}]
+// const s=[{Email:'lingam1707@gmail.com'},{projection:{Password:0}}]
+// async function get()
+// {
+//     return await client.db('Books').collection('Users').findOne({Email:'lingam1707@gmail.com'},{projection:{Password:0}})
+// }
+// const data=await get()
+// console.log(data);

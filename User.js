@@ -1,11 +1,12 @@
 import express from 'express'
-import {createUser,getUser,updateUser,PasswordGenerator} from './UserDb.js'
+import {createUser,getUser,updateUser,PasswordGenerator,getAllUsers} from './UserDb.js'
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv";
 import  Mail  from "./Mail.js";
 import bcrypt from 'bcrypt'
 import {auth} from './Token.js'
 import {UpdateCartData,UpdateorderBook} from './BooksDb.js'
+import {client} from './index.js'
 dotenv.config();
 const router=express.Router()
 
@@ -273,7 +274,7 @@ router.route('/updatepassword')
 
 
 router.route('/profileupdate')
-.post(auth,async (request,response)=>{
+.put(auth,async (request,response)=>{
     const {FirstName,LastName,Email,Address,Mobile}=request.body;
 
     if(!(FirstName && LastName && Email && Address && Mobile))
@@ -307,9 +308,45 @@ router.route('/profileupdate')
 
 })
 
+router.route('/getuser')
+.post(auth,async(request,response)=>{
+  const {Email}=request.body
+  if(!Email)
+  {
+    return response.status(400).send({Msg:"All Fields Required"})
+  }
 
+  
+  const obj={FirstName:1,LastName:1,Email:1,Address:1,Mobile:1,Status:1,User:1}
+  const data=await client.db('Books').collection('Users').findOne({Email},{projection:obj})
+  if(!data)
+  {
+    return response.status(404).send({Msg:"User not Found"})
+  }
+  return response.send(data)
+})
 
-
+router.route('/getallusers')
+.post(auth,async(request,response)=>{
+  const {Email}=request.body
+  if(!Email)
+  {
+    return response.status(400).send({Msg:"All Fields Required"})
+  }
+  const check=await getUser({Email})
+  if(!check)
+  {
+    return response.status(404).send({Msg:"User not Found"})
+  }
+ 
+    const {User}=check
+    if(User==='Admin')
+    {
+        const userData=await getAllUsers({User:{$eq:'User'}})
+        return response.send(userData);
+    }
+    return response.status(401).send({Msg:"Not Authorized"})
+})
 
 
 export const userRouter=router;

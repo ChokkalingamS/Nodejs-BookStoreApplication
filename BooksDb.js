@@ -5,23 +5,23 @@ async function getBooks(userData)
 {
     if(userData)
     {
-        return await client.db('Books').collection('Fantasy').find(userData).toArray();
+        return await client.db('Books').collection('books').find(userData).toArray();
     }
 
-        return await client.db('Books').collection('Fantasy').find().toArray();
+        return await client.db('Books').collection('books').find().toArray();
 
 }
 
 
 async function getBooksById(userData)
 {
-    return await client.db('Books').collection('Fantasy').findOne(userData)
+    return await client.db('Books').collection('books').findOne(userData)
 }
 
 
 async function updateBookData(userData)
 {
-    return await client.db('Books').collection('Fantasy').updateOne(userData[0],userData[1])
+    return await client.db('Books').collection('books').updateOne(userData[0],userData[1])
 }
 
 async function orderBook(userData)
@@ -66,11 +66,24 @@ async function  UpdateCartData(userData)
 
 
 
+async function getData(userData)
+{
+    return await client.db('Books').collection('books').distinct(userData)
+}
 
+async function getNewBooks()
+{
+    return await client.db('Books').collection('NewArrivals').find().toArray();
+}
 
+async function DeleteBook(userData)
+{
+
+  return client.db('Books').collection('books').deleteOne(userData);
+}
 
 
 
 export {getBooks,getBooksById,updateBookData,orderBook,getorderBookData,UpdateorderBook,getorderBooks, getCartData,
-    UpdateCartData,
+    UpdateCartData,getData,getNewBooks,DeleteBook,
     AddCartData,}
