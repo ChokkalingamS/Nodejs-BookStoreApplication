@@ -12,7 +12,7 @@ import {
   getCartData,
   UpdateCartData,
   AddCartData,
-  getData,getNewBooks,DeleteBook,
+  getData,getNewBooks,DeleteBook,getcustomerBooks,
 } from "./BooksDb.js";
 
 import {ObjectId} from 'mongodb'
@@ -162,7 +162,7 @@ router.route('/orderbooks/:id')
         return response.status(404).send({Msg:'Not Found'})
     }
 
-    const {FirstName,LastName,Mobile,Address}=getUserData;
+    const {FirstName,LastName,Mobile,Address,User}=getUserData;
 
     if(!(Mobile && Address))
     {
@@ -227,7 +227,7 @@ router.route('/orderbooks/:id')
     }
     else
     {
-        const updateData=await orderBook({FirstName,LastName,Email,Mobile,Address,OrderedBooks:[bookDetails]})
+        const updateData=await orderBook({FirstName,LastName,Email,Mobile,Address,User,OrderedBooks:[bookDetails]})
        
         if(!updateData)
         {
@@ -245,7 +245,7 @@ router.route('/orderbooks/:id')
         .send({ msg: "Error Occured" });   
     }
 
-    const delCartData=await UpdateCartData([{Email},{$pull:{OrderedBooks:{BookName}}}])
+    const delCartData=await UpdateCartData([{Email},{$pull:{OrderedBooks:{_id}}}])
 
     if(!delCartData)
     {
@@ -282,15 +282,15 @@ router.route('/getorderbooks')
 .post(auth,async (request,response)=>{
 
     const {Email}=request.body
-    console.log(Email,'hi');
     if(!Email)
     {
-        const getData=await getorderBooks()
-        if(!getData)
-        {
-        return response.send({Msg:'Books Not Yet Ordered'})
-         }
-        return response.send(getData)
+        // const getData=await getorderBooks()
+        // if(!getData)
+        // {
+        // return response.send({Msg:'Books Not Yet Ordered'})
+        //  }
+        // return response.send(getData)
+        return response.status(404).send({Msg:'User Not Found'})
 
     }
 
@@ -303,6 +303,27 @@ router.route('/getorderbooks')
 
 })
 
+router.route('/userOrders')
+.post(auth,async(request,response)=>{
+  const {Email}=request.body
+  if(!Email)
+  {
+    return response.status(400).send({Msg:"All Fields Required"})
+  }
+  const check=await getUser({Email})
+  if(!check)
+  {
+    return response.status(404).send({Msg:"User not Found"})
+  }
+  const {User}=check;
+  if(User==='Admin')
+  {
+    const userData=await getcustomerBooks({User:{$eq:'User'}})
+    return response.send(userData);
+}
+return response.status(401).send({Msg:"Not Authorized"})
+  
+})
 
 
 
@@ -327,7 +348,7 @@ router.route('/addtocart/:id')
         return response.status(404).send({Msg:'Not Found'})
     }
 
-    const {FirstName,LastName,Mobile,Address}=getUserData
+    const {FirstName,LastName,Mobile,Address,User}=getUserData
 
     const getBookData=await getBooksById({_id:ObjectId(id)});
     if(!getBookData)
@@ -337,18 +358,16 @@ router.route('/addtocart/:id')
 
     const { _id,BookName,Author,Description,Language,Publisher,Imageurl,Price,Available,PublicationDate,
         Rating,Genre}=getBookData
-// genre
+
    const bookDetails={_id,BookName,Author,Description,Language,Publisher,Imageurl,Price,Available,
     PublicationDate,Rating,Genre}
-    // Genre,}
-// const checkBook=await getCartData({OrderedBooks:{_id}})
+    
+   const checkBook=await getCartData({Email,OrderedBooks:{$elemMatch:{_id:ObjectId(id)}}})
 
-//     const checkBook=await client.db('Books').collection('Cart').findOne({Email},{OrderedBooks:{$elemMatch:{_id:ObjectId(id)}}})
-// console.log(checkBook);
-// if(checkBook)
-// {
-//     return response.status(400).send({Msg:'Book Already added to cart'})
-// }
+if(checkBook)
+{
+    return response.status(400).send({Msg:'Book Already added to cart'})
+}
 
 const getDetails=await getCartData({Email})
 
@@ -364,7 +383,7 @@ if(getDetails)
 }
 else
 {
-    const updateData=await AddCartData({FirstName,LastName,Email,Mobile,Address,OrderedBooks:[bookDetails]})
+    const updateData=await AddCartData({FirstName,LastName,Email,Mobile,Address,User,OrderedBooks:[bookDetails]})
    
     if(!updateData)
     {
@@ -375,6 +394,36 @@ else
     return response.send('Book Added to Cart')
 
 })
+
+router.route('/deletecart/:id')
+.delete(auth,async(request,response)=>{
+    const {Email}=request.body
+    const {id}=request.params
+
+    if(!(Email && id))
+    {
+        return response.status(400).send({Msg:'All Fields Required'})
+    }
+
+    const getDetails=await getCartData({Email})
+
+    if(!getDetails)
+    {
+        return response.status(404).send({Msg:'User Not Found'})
+    }
+    // const getBookData=await getBooksById({_id:ObjectId(id)});
+    const delCartData=await UpdateCartData([{Email},{$pull:{OrderedBooks:{_id:ObjectId(id)}}}])
+    if(!delCartData)
+    {
+        return response.status(404).send({Msg:'Book Not found'})
+    }
+    return response.send({Msg:'Book Removed from cart'})
+
+})
+
+
+
+
 
 
 router.route('/getcartdata')

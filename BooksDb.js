@@ -36,11 +36,16 @@ async function getorderBookData(userData)
 
 async function getorderBooks(userData)
 {
-    if(userData)
-    {
+    // if(userData)
+    // {
     return await client.db('Books').collection('OrderedBooks').findOne(userData)
-    }
-    return await client.db('Books').collection('OrderedBooks').find().toArray()
+    // }
+    // return await client.db('Books').collection('OrderedBooks').find().toArray()
+}
+
+async function getcustomerBooks(userData)
+{
+    return await client.db('Books').collection('OrderedBooks').find(userData).toArray()
 }
 
 async function UpdateorderBook(userData)
@@ -85,5 +90,5 @@ async function DeleteBook(userData)
 
 
 export {getBooks,getBooksById,updateBookData,orderBook,getorderBookData,UpdateorderBook,getorderBooks, getCartData,
-    UpdateCartData,getData,getNewBooks,DeleteBook,
+    UpdateCartData,getData,getNewBooks,DeleteBook, getcustomerBooks,
     AddCartData,}
