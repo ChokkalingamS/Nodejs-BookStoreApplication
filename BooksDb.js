@@ -12,6 +12,20 @@ async function getBooks(userData)
 
 }
 
+async function BookAvailability(userData)
+{
+    
+   return await client.db('Books').collection('books').findOne(userData);
+ 
+}
+
+
+
+async function InsertBook(userData)
+{
+    return await client.db('Books').collection('books').insertOne(userData)
+}
+
 
 async function getBooksById(userData)
 {
@@ -89,6 +103,6 @@ async function DeleteBook(userData)
 
 
 
-export {getBooks,getBooksById,updateBookData,orderBook,getorderBookData,UpdateorderBook,getorderBooks, getCartData,
+export {getBooks,BookAvailability,InsertBook,getBooksById,updateBookData,orderBook,getorderBookData,UpdateorderBook,getorderBooks, getCartData,
     UpdateCartData,getData,getNewBooks,DeleteBook, getcustomerBooks,
     AddCartData,}

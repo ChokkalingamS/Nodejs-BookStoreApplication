@@ -6,6 +6,7 @@ dotenv.config();
 export default function Mail(obj)
  {
     const {Email,Message,response,responseMsg}=obj;
+    console.log(responseMsg);
 
     const transport = nodemailer.createTransport({
       service: "gmail",
@@ -14,7 +15,7 @@ export default function Mail(obj)
         pass: process.env.password,
       },
     });
-    
+    console.log(Email);
     const mailOptions = {
       from: process.env.email,
       to:Email,
@@ -25,10 +26,10 @@ export default function Mail(obj)
     transport.sendMail(mailOptions, (err, info) => {
       if (err) {
         console.log("err");
-        response.status(400).send('Error Occured')
+        return response.status(400).send('Error Occured')
       } else {
-          response.send({Msg:responseMsg})
-        console.log("status", info.response);
+          return response.send({Msg:responseMsg})
+        
       }
     });
   }

@@ -67,7 +67,8 @@ router.route('/signup')
                    <br/>
                    <p>Regards</p>
                    <p>Book Store Team</p>`;
-    const responseMsg=`Account Created`;
+
+    const responseMsg=`Mail Sent for Verification`;
 
     const obj={Email,Message,response,responseMsg}
 
@@ -130,7 +131,7 @@ router.route('/login')
         return response.status(404).send({Msg:'User Not Found'})
     }
 
-    const {_id,Status,Password:dbPassword}=getData;
+    const {_id,Status,Password:dbPassword,User,FirstName}=getData;
 
     if(Status==='InActive')
     {
@@ -149,14 +150,14 @@ router.route('/login')
     {
       return response
       .status(400)
-      .send({ msg: "Invalid login credentials : Password" });  
+      .send({ Msg: "Invalid login credentials : Password" });  
     }
     
     
     const update=await updateUser([{_id},{$set:{Login:loginTime}}])
 
     // response.redirect("localhost:3000/Dashboard")
-    return response.send({msg: "Login successful",token});
+    return response.send({msg: "Login successful",token,User,FirstName,Email});
 
 
 
@@ -174,7 +175,7 @@ router.route('/forgotpassword')
 
     if(!getData)
     {
-        return response.status(404).send({Msg:"User Not Found"})
+        return response.status(404).send({Msg:"Invalid Credentials"})
     }
 
     const {_id,FirstName,LastName}=getData
@@ -197,7 +198,7 @@ router.route('/forgotpassword')
     <p>Regards</p>
     <p>Book Store Team</p>`
     
-    const responseMsg='Mail Sent'
+    const responseMsg='Password Reset Link Sent To Email'
     
     const obj={Email,Message,response,responseMsg}
    
@@ -301,7 +302,7 @@ router.route('/profileupdate')
 
     if(!modifiedCount)
     {
-        return response.status(400).send('UserData Already Exists')
+        return response.status(400).send({Msg:'No Changes'})
     }
 
    return  response.send({Msg:"Profile Updated"})

@@ -2,7 +2,7 @@ import express from 'express'
 import  Mail  from "./Mail.js";
 import {client} from './index.js'
 import {
-  getBooks,
+  getBooks,InsertBook,
   getBooksById,
   updateBookData,
   orderBook,
@@ -12,7 +12,7 @@ import {
   getCartData,
   UpdateCartData,
   AddCartData,
-  getData,getNewBooks,DeleteBook,getcustomerBooks,
+  getData,getNewBooks,DeleteBook,getcustomerBooks,BookAvailability
 } from "./BooksDb.js";
 
 import {ObjectId} from 'mongodb'
@@ -21,6 +21,43 @@ import {getUser} from './UserDb.js'
 import {auth} from './Token.js'
 
 const router=express.Router()
+
+router.route('/addbook')
+.post(auth,async (request,response)=>{
+    const {BookName,Author,Description,Language,Publisher,Imageurl,Price,Available,PublicationDate,Rating,Genre,Email} = request.body;
+    if(!(BookName||Author||Description||Language||Publisher||Imageurl||Price||Available||PublicationDate||Rating||Genre))
+    {
+        return response.status(400).send({Msg:'All Fields Required'})
+    }
+
+    const check=await getUser({Email,User:'Admin'})
+    if(!check)
+    {
+        return response.status(401).send({Msg:'UnAuthorized'})
+    }
+
+    const bookData={BookName,Author,Description,Language,Publisher,Imageurl,Price,Available,PublicationDate,Rating,Genre}
+
+    const get =await BookAvailability(bookData)
+    console.log(get);
+
+    if(get)
+    {
+        return response.status(400).send({Msg:'Already Books Available'})
+    }
+
+
+    const insert=await InsertBook(bookData)
+
+    if(!insert)
+    {
+        return response.status(400).send({Msg:'Error Occurred'})
+    }    
+
+    return response.send({Msg:'Books Added'})
+
+})
+
 
 router.route('/getbook')
 .get(async (request,response)=>{
@@ -47,10 +84,12 @@ router.route('/getbook/:id')
 
     if(!getData)
     {
-        return response.status(404).send('Not Found')
+        return response.status(404).send({Msg:'Book Unavailable'})
     }
 
-    response.send(getData)
+    console.log(getData);
+    return response.send(getData)
+
 
 })
 
@@ -73,16 +112,16 @@ router.route('/getbook/:id')
       Genre,
     } = request.body;
 
-    // if(!( BookName&&Author&&Description&&Language&&Publisher&&Imageurl&&Price&&Available&&PublicationDate&&Rating))
-    // {
-    //     return response.status(400).send({Msg:"All Fields Required"})
-    // }
+    if(!( BookName && Author && Description && Language && Publisher && Imageurl && Price && Available && PublicationDate && Rating))
+    {
+        return response.status(400).send({Msg:"All Fields Required"})
+    }
 
     const getData=await getBooksById({_id:ObjectId(id)});
 
     if(!getData)
     {
-        return response.status(404).send('Not Found')
+        return response.status(404).send({Msg:'Not Found'})
     }
 
     const update = await updateBookData([
@@ -109,11 +148,11 @@ router.route('/getbook/:id')
   {
     return response
       .status(400)
-      .send({ msg: "Error Occured" });
+      .send({ Msg: "No Changes" });
   }
 
-  const result=await getBooksById({_id:ObjectId(id)});  
-  return response.send(result)
+//   const result=await getBooksById({_id:ObjectId(id)});  
+  return response.send({Msg:'Book Updated'})
 
 })
 
@@ -391,7 +430,7 @@ else
     }
 }
 
-    return response.send('Book Added to Cart')
+    return response.send({Msg:'Book Added to Cart'})
 
 })
 
@@ -422,10 +461,6 @@ router.route('/deletecart/:id')
 })
 
 
-
-
-
-
 router.route('/getcartdata')
 .post(auth,async (request,response)=>{
 
@@ -434,7 +469,7 @@ router.route('/getcartdata')
     const getData=await getCartData({Email})
     if(!getData)
     {
-        return response.send('')
+        return response.status(400).send({Msg:'Not Found'})
     }
     return response.send(getData)
 
