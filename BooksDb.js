@@ -12,14 +12,13 @@ async function getBooks(userData)
 
 }
 
+
 async function BookAvailability(userData)
 {
     
    return await client.db('Books').collection('books').findOne(userData);
  
 }
-
-
 
 async function InsertBook(userData)
 {
@@ -50,11 +49,7 @@ async function getorderBookData(userData)
 
 async function getorderBooks(userData)
 {
-    // if(userData)
-    // {
-    return await client.db('Books').collection('OrderedBooks').findOne(userData)
-    // }
-    // return await client.db('Books').collection('OrderedBooks').find().toArray()
+    return await client.db('Books').collection('OrderedBooks').findOne(userData)  
 }
 
 async function getcustomerBooks(userData)
@@ -83,8 +78,6 @@ async function  UpdateCartData(userData)
     return await client.db('Books').collection('Cart').updateOne(userData[0],userData[1])
 }
 
-
-
 async function getData(userData)
 {
     return await client.db('Books').collection('books').distinct(userData)
@@ -103,6 +96,21 @@ async function DeleteBook(userData)
 
 
 
-export {getBooks,BookAvailability,InsertBook,getBooksById,updateBookData,orderBook,getorderBookData,UpdateorderBook,getorderBooks, getCartData,
-    UpdateCartData,getData,getNewBooks,DeleteBook, getcustomerBooks,
-    AddCartData,}
+export {
+  getBooks,
+  BookAvailability,
+  InsertBook,
+  getBooksById,
+  updateBookData,
+  orderBook,
+  getorderBookData,
+  UpdateorderBook,
+  getorderBooks,
+  getCartData,
+  UpdateCartData,
+  getData,
+  getNewBooks,
+  DeleteBook,
+  getcustomerBooks,
+  AddCartData,
+};

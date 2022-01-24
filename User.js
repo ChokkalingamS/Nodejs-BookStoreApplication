@@ -11,6 +11,7 @@ dotenv.config();
 const router=express.Router()
 
 
+// Signup
 router.route('/signup')
 .post(async(request,response)=>{
 
@@ -76,6 +77,7 @@ router.route('/signup')
 })
 
 
+// Two Step Verification
 router.route('/verification/:id')
 .get(async (request,response)=>{
     const {id}=request.params
@@ -106,16 +108,12 @@ router.route('/verification/:id')
     {
         return response.status(500).send({Msg:'Error Occurred'})
     }
-  
-   
-    // return response.send({Msg:'Two Step Verification Completed'})
     return response.redirect(`https://book-storeapplication.netlify.app/tverification`)
-  
 })
 
 
 
-
+// Login
 router.route('/login')
 .post(async (request,response)=>{
     const {Email,Password}=request.body;
@@ -140,7 +138,6 @@ router.route('/login')
         .send({ Msg:'Please Complete Verification' });
     }
 
-    
     const passwordMatch = await bcrypt.compare(Password, dbPassword);
     const date=new Date();
     const loginTime=`${date.toLocaleDateString()},${date.toLocaleTimeString()}`
@@ -156,13 +153,13 @@ router.route('/login')
     
     const update=await updateUser([{_id},{$set:{Login:loginTime}}])
 
-    // response.redirect("localhost:3000/Dashboard")
-    return response.send({msg: "Login successful",token,User,FirstName,Email});
-
-
+    
+    return response.send({msg: "Login successful",token,User,FirstName,Email})
 
 })
 
+
+// Forgot Password
 router.route('/forgotpassword')
 .post(async (request,response)=>{
     const {Email}=request.body;
@@ -207,6 +204,7 @@ router.route('/forgotpassword')
 })
 
 
+// Forgot Password Verification
 router.route('/forgotpassword/verify/:id')
 .get(async (request,response)=>{
     
@@ -221,15 +219,12 @@ router.route('/forgotpassword/verify/:id')
   if (!tokenVerify) {
     return response.status(400).send({ msg: "Link Expired" });
   }
-  
-  // return response.send('Verification Completed')
-
   return response.redirect(`https://book-storeapplication.netlify.app/updatepassword/${token}`)
 
 })
 
 
-
+// Change Password
 router.route('/updatepassword')
 .post(async (request,response)=>
 {
@@ -266,14 +261,13 @@ router.route('/updatepassword')
       .status(400)
       .send({ msg: "Error Occured" });
   }
-  
-//   const result = await getuser({ Mailid });
-  
+    
   return response.send({Msg:'Password Changed Successfully'});
     
 })
 
 
+// User Profile Update
 router.route('/profileupdate')
 .put(auth,async (request,response)=>{
     const {FirstName,LastName,Email,Address,Mobile}=request.body;
@@ -309,6 +303,8 @@ router.route('/profileupdate')
 
 })
 
+
+// Get user details
 router.route('/getuser')
 .post(auth,async(request,response)=>{
   const {Email}=request.body
@@ -327,6 +323,8 @@ router.route('/getuser')
   return response.send(data)
 })
 
+
+// Get All Users
 router.route('/getallusers')
 .post(auth,async(request,response)=>{
   const {Email}=request.body

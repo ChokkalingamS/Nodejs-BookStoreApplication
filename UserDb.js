@@ -1,7 +1,7 @@
 import {client} from './index.js'
 import bcrypt from 'bcrypt'
 
-// createUser,getUser,PasswordGenerator
+
 async function createUser(userData)
 {
     return client.db('Books').collection('Users').insertOne(userData);
@@ -33,4 +33,4 @@ async function PasswordGenerator(Password)
 
 
 
-export {createUser,getUser,updateUser,PasswordGenerator,getAllUsers}
+export { createUser, getUser, updateUser, PasswordGenerator, getAllUsers };

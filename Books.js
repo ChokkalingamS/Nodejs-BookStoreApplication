@@ -1,8 +1,9 @@
 import express from 'express'
 import  Mail  from "./Mail.js";
-import {client} from './index.js'
+
 import {
-  getBooks,InsertBook,
+  getBooks,
+  InsertBook,
   getBooksById,
   updateBookData,
   orderBook,
@@ -12,16 +13,23 @@ import {
   getCartData,
   UpdateCartData,
   AddCartData,
-  getData,getNewBooks,DeleteBook,getcustomerBooks,BookAvailability
+  getData,
+  getNewBooks,
+  DeleteBook,
+  getcustomerBooks,
+  BookAvailability,
 } from "./BooksDb.js";
 
 import {ObjectId} from 'mongodb'
 import {getUser} from './UserDb.js'
-
 import {auth} from './Token.js'
+
+
 
 const router=express.Router()
 
+
+// Adding Books
 router.route('/addbook')
 .post(auth,async (request,response)=>{
     const {BookName,Author,Description,Language,Publisher,Imageurl,Price,Available,PublicationDate,Rating,Genre,Email} = request.body;
@@ -59,6 +67,7 @@ router.route('/addbook')
 })
 
 
+// Get All Books
 router.route('/getbook')
 .get(async (request,response)=>{
 
@@ -74,7 +83,7 @@ router.route('/getbook')
 })
 
 
-
+// Getting Books By Id
 router.route('/getbook/:id')
 .get( async (request,response)=>{
 
@@ -94,6 +103,7 @@ router.route('/getbook/:id')
 })
 
 
+// Edit Book By Id
 router.route('/getbook/:id')
 .put( async (request,response)=>{
 
@@ -151,12 +161,12 @@ router.route('/getbook/:id')
       .send({ Msg: "No Changes" });
   }
 
-//   const result=await getBooksById({_id:ObjectId(id)});  
   return response.send({Msg:'Book Updated'})
 
 })
 
 
+// Get Books by Author
 router.route('/getbooksbyauthor')
 .get(async (request,response)=>{
     const {name}=request.query;
@@ -169,6 +179,7 @@ router.route('/getbooksbyauthor')
     return response.send(getData);
 })
 
+// Get Books By Author
 router.route('/getbooksbygenre')
 .get(async (request,response)=>{
     const {genre}=request.query;
@@ -181,13 +192,12 @@ router.route('/getbooksbygenre')
     return response.send(getData);
 })
 
+
+// Order Books By Id
 router.route('/orderbooks/:id')
 .post(auth,async(request,response)=>{
     const {total,Email}=request.body;
     const {id}=request.params;
-
-    // const d = new Date();
-    // d.setDate(d.getDate() + 2);
                         
    let d = new Date();
    d.setDate(d.getDate() + 2);
@@ -197,7 +207,6 @@ router.route('/orderbooks/:id')
   {
   value += d[i] + " ";
   }
-
 
     if(!(total && id && Email))
     {
@@ -326,19 +335,14 @@ Mail(obj)
 
 
 
-
+// Ordered Books
 router.route('/getorderbooks')
 .post(auth,async (request,response)=>{
 
     const {Email}=request.body
     if(!Email)
     {
-        // const getData=await getorderBooks()
-        // if(!getData)
-        // {
-        // return response.send({Msg:'Books Not Yet Ordered'})
-        //  }
-        // return response.send(getData)
+      
         return response.status(404).send({Msg:'User Not Found'})
 
     }
@@ -375,11 +379,7 @@ return response.status(401).send({Msg:"Not Authorized"})
 })
 
 
-
-
-
-
-
+// Add to cart by id
 router.route('/addtocart/:id')
 .post(auth,async (request,response)=>{
     const {Email}=request.body;
@@ -444,6 +444,10 @@ else
 
 })
 
+
+
+// Delete Book from cart
+
 router.route('/deletecart/:id')
 .delete(auth,async(request,response)=>{
     const {Email}=request.body
@@ -471,6 +475,7 @@ router.route('/deletecart/:id')
 })
 
 
+// Get Cart Books
 router.route('/getcartdata')
 .post(auth,async (request,response)=>{
 
@@ -486,6 +491,7 @@ router.route('/getcartdata')
 })
 
 
+// Get Book by id
 router.route('/get/:id')
 .get(async (request,response)=>{
     const {id}=request.params
@@ -496,15 +502,7 @@ router.route('/get/:id')
     }
 
     var get=await getData(id)
-    // if(id==='Author')
-    // {
-         
-    // }
-    // else if(id==='Genre')
-    // {
-    //      get=await getData([{},{projection:{Genre:1,_id:0}},id])
-    // }
-
+  
     if(!get)
     {
         return response.status(404).send({Msg:'Not Found'})
@@ -514,6 +512,7 @@ router.route('/get/:id')
 
 })
 
+// Get all new arrival books
 router.route('/getnewarrivals')
 .get(async (request,response)=>{
     const getBooks=await getNewBooks()
@@ -524,7 +523,7 @@ router.route('/getnewarrivals')
     return response.send(getBooks)
 })
 
-
+// Delete book by id
 router.route('/deletebook/:id')
 .delete(auth,async (request,response)=>{
         const{id}=request.params;
