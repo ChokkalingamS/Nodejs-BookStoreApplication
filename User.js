@@ -57,7 +57,7 @@ router.route('/signup')
     {
         return response.status(500).send({Msg:'Error Occurred'})
     }
-    const link=`http://localhost:1000/user/verification/${SignupToken}`;
+    const link=`https://bookstore--application.herokuapp.com/user/verification/${SignupToken}`;
     const Message=`<b>Greetings ${FirstName} ${LastName}</b>
                    <p>Welcome to the Book Store </p>
                    <p>Your Account has been Successfully Created</p>
@@ -109,7 +109,7 @@ router.route('/verification/:id')
   
    
     // return response.send({Msg:'Two Step Verification Completed'})
-    return response.redirect(`http://localhost:3000/tverification`)
+    return response.redirect(`https://book-storeapplication.netlify.app/tverification`)
   
 })
 
@@ -191,7 +191,7 @@ router.route('/forgotpassword')
         .send({ msg: "Error Occurred" });
     }
     
-    const link = `http://localhost:1000/user/forgotpassword/verify/${token}`;
+    const link = `https://bookstore--application.herokuapp.com/user/forgotpassword/verify/${token}`;
     const Message=`<p>Greetings ${FirstName} ${LastName}</p>
     <p>Forgot Password</p>
     <a href=${link}>Click the link to reset the password </a>
@@ -224,7 +224,7 @@ router.route('/forgotpassword/verify/:id')
   
   // return response.send('Verification Completed')
 
-  return response.redirect(`http://localhost:3000/updatepassword/${token}`)
+  return response.redirect(`https://book-storeapplication.netlify.app/updatepassword/${token}`)
 
 })
 
