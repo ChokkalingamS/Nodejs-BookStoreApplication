@@ -137,7 +137,7 @@ router.route('/login')
     {
       return response
         .status(400)
-        .send({ msg:'Account InActive' });
+        .send({ Msg:'Please Complete Verification' });
     }
 
     

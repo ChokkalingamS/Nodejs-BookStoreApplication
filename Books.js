@@ -186,8 +186,18 @@ router.route('/orderbooks/:id')
     const {total,Email}=request.body;
     const {id}=request.params;
 
-    const d = new Date();
-    d.setDate(d.getDate() + 2);
+    // const d = new Date();
+    // d.setDate(d.getDate() + 2);
+                        
+   let d = new Date();
+   d.setDate(d.getDate() + 2);
+   d = d.toString().split(" ");
+  let value = "";
+  for (let i = 0; i < 4; i++)
+  {
+  value += d[i] + " ";
+  }
+
 
     if(!(total && id && Email))
     {
@@ -205,7 +215,7 @@ router.route('/orderbooks/:id')
 
     if(!(Mobile && Address))
     {
-        return response.status(400).send({Msg:"Address or Mobile Should not be Empty"})
+        return response.status(400).send({Msg:"Complete Your Profile To Place Order"})
     }
 
     let  getBookData;
@@ -248,7 +258,7 @@ router.route('/orderbooks/:id')
     }
 
     const bookDetails={_id,BookName,Author,Description,Language,Publisher,Imageurl,Price:Price*total,total,
-        PublicationDate,Rating,Genre,ExpectedDelivery:d.toString()}
+        PublicationDate,Rating,Genre,ExpectedDelivery:value}
         
 
 
@@ -300,7 +310,7 @@ router.route('/orderbooks/:id')
     <p>Total Books Ordered : ${total} Nos</p>
     <p>Bill Payment : Rs.${(Price*total)}</p>
     <p>Payment Method : Cash On Delivery</p>
-    <b>Expected Delivery before ${d}</b>
+    <b>Expected Delivery before ${value}</b>
     <p>Delivery Address</p>
     <p>${FirstName} ${LastName}</p>
     <p>${Address}</p>
