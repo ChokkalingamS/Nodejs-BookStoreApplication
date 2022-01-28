@@ -542,7 +542,7 @@ router.route('/deletebook/:id')
 
 router.route('/booksbyname/:id')
 .get(async (request,response)=>{
-    const {id}=request.params()
+    const {id}=request.params;
     if(!id)
     {
         return response.send('Fields Required')
@@ -552,6 +552,7 @@ router.route('/booksbyname/:id')
     {
         return response.status(404).send({Msg:'Books Not Found'})
     }
+    console.log(getData);
     return response.send(getData)
 })
 
