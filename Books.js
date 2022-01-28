@@ -541,7 +541,7 @@ router.route('/deletebook/:id')
 })
 
 router.route('/booksbyname/:id')
-.get(auth,async (request,response)=>{
+.get(async (request,response)=>{
     const {id}=request.params()
     if(!id)
     {
