@@ -491,7 +491,7 @@ router.route('/getcartdata')
 })
 
 
-// Get Book by id
+// Get Book by Author/Genre
 router.route('/get/:id')
 .get(async (request,response)=>{
     const {id}=request.params
@@ -540,7 +540,20 @@ router.route('/deletebook/:id')
 
 })
 
-
+router.route('/booksbyname/:id')
+.get(auth,async (request,response)=>{
+    const {id}=request.params()
+    if(!id)
+    {
+        return response.send('Fields Required')
+    }
+    const getData=await getBooks({BookName:id})
+    if(!getData)
+    {
+        return response.status(404).send({Msg:'Books Not Found'})
+    }
+    return response.send(getData)
+})
 
 
 export const bookRouter=router
