@@ -547,7 +547,7 @@ router.route('/booksbyname/:id')
     {
         return response.send('Fields Required')
     }
-    const getData=await getBooks({BookName:id})
+    const getData=await getBooksById({BookName:id})
     if(!getData)
     {
         return response.status(404).send({Msg:'Books Not Found'})
